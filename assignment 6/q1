@@ -1,1 +1,109 @@
+#include <stdio.h>
 
+#define SIZE 3
+
+void initializeBoard(char board[SIZE][SIZE]);
+void printBoard(char board[SIZE][SIZE]);
+int checkWin(char board[SIZE][SIZE]);
+int checkDraw(char board[SIZE][SIZE]);
+void makeMove(char board[SIZE][SIZE], int row, int col, char player);
+
+int main() {
+    char board[SIZE][SIZE];
+    char player = 'X';
+    int row, col;
+    int gameStatus = 0; // 0: ongoing, 1: win, 2: draw
+
+    initializeBoard(board);
+
+    while (gameStatus == 0) {
+        printBoard(board);
+        printf("Player %c, enter your move (row and column): ", player);
+        scanf("%d %d", &row, &col);
+
+        // Check if the move is valid
+        if (row < 0 || row >= SIZE || col < 0 || col >= SIZE || board[row][col] != ' ') {
+            printf("Invalid move. Try again.\n");
+            continue;
+        }
+
+        makeMove(board, row, col, player);
+        gameStatus = checkWin(board);
+
+        if (gameStatus == 0) { // No winner yet
+            gameStatus = checkDraw(board);
+        }
+
+        // Switch player
+        player = (player == 'X') ? 'O' : 'X';
+    }
+
+    printBoard(board);
+
+    if (gameStatus == 1) {
+        printf("Player %c wins!\n", (player == 'X') ? 'O' : 'X');
+    } else {
+        printf("It's a draw!\n");
+    }
+
+    return 0;
+}
+
+// Function to initialize the game board
+void initializeBoard(char board[SIZE][SIZE]) {
+    for (int i = 0; i < SIZE; i++) {
+        for (int j = 0; j < SIZE; j++) {
+            board[i][j] = ' ';
+        }
+    }
+}
+
+// Function to print the game board
+void printBoard(char board[SIZE][SIZE]) {
+    printf("\n");
+    for (int i = 0; i < SIZE; i++) {
+        for (int j = 0; j < SIZE; j++) {
+            printf(" %c ", board[i][j]);
+            if (j < SIZE - 1) printf("|");
+        }
+        printf("\n");
+        if (i < SIZE - 1) {
+            printf("---|---|---\n");
+        }
+    }
+    printf("\n");
+}
+
+// Function to check for a win
+int checkWin(char board[SIZE][SIZE]) {
+    // Check rows and columns
+    for (int i = 0; i < SIZE; i++) {
+        if ((board[i][0] == board[i][1] && board[i][1] == board[i][2] && board[i][0] != ' ') ||
+            (board[0][i] == board[1][i] && board[1][i] == board[2][i] && board[0][i] != ' ')) {
+            return 1; // Win
+        }
+    }
+    // Check diagonals
+    if ((board[0][0] == board[1][1] && board[1][1] == board[2][2] && board[0][0] != ' ') ||
+        (board[0][2] == board[1][1] && board[1][1] == board[2][0] && board[0][2] != ' ')) {
+        return 1; // Win
+    }
+    return 0; // No win
+}
+
+// Function to check for a draw
+int checkDraw(char board[SIZE][SIZE]) {
+    for (int i = 0; i < SIZE; i++) {
+        for (int j = 0; j < SIZE; j++) {
+            if (board[i][j] == ' ') {
+                return 0; // Not a draw
+            }
+        }
+    }
+    return 2; // Draw
+}
+
+// Function to make a move
+void makeMove(char board[SIZE][SIZE], int row, int col, char player) {
+    board[row][col] = player;
+}
